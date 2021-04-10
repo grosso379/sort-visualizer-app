@@ -3,7 +3,7 @@
     <div class="navBar">
       <h1 class="title">Sort Algorithms Visualizer</h1>
       <div class="formsContainer">
-        <select v-model="selectedAlgorithm" class="form-select" aria-label="Default select example">
+        <select v-model="selectedAlgorithm" class="form-select" aria-label="Default select example" @change="sortArray(selectedAlgorithm)">
           <option value selected>Choose a sort algorithm</option>
           <option v-for="(algorithm, name) in algorithms" :key="name" :value="name" >
             {{name}}
@@ -40,9 +40,9 @@ export default {
       array: [],
       algorithms: 
         {
-        "Insertion Sort": this.instertionSort(this.array), 
-        "Selection Sort": this.selectionSort(this.array), 
-        "Bubble Sort": this.bubbleSort(this.array),
+        "Insertion Sort": this.instertionSort, 
+        "Selection Sort": this.selectionSort, 
+        "Bubble Sort": this.bubbleSort,
       },
       speeds:[1,2,3,4,5],
       sizes:[100, 250, 500, 750, 1000],
@@ -71,6 +71,11 @@ export default {
       let a = this.createArray(n)
       this.shuffle(a)
       this.array = a
+    },
+
+    sortArray(selectedAlgorithm){
+      let a = this.algorithms[selectedAlgorithm]
+      console.log(a("b"))
     },
 
     selectionSort(arr){
