@@ -23,8 +23,8 @@
         </select>
       </div>
     </div>
-    <div class="arrayContainer">
-      <div v-for="num in array" :key="num" class="bar" :style="{height: (num / array.length) * 80 + '%'}"></div>
+    <div class="arrayContainer" :key="arrayKey">
+      <div v-for="(num, idx) in array" :key="idx" class="bar" :style="{height: (num / array.length) * 80 + '%'}"></div>
     </div>
     <div class="footer">
       <h2>This is a footer</h2>
@@ -38,6 +38,7 @@ export default {
   data () {
     return {
       array: [],
+      arrayKey:0,
       algorithms: 
         {
         "Insertion Sort": this.instertionSort, 
@@ -45,7 +46,7 @@ export default {
         "Bubble Sort": this.bubbleSort,
       },
       speeds:[1,2,3,4,5],
-      sizes:[100, 250, 500, 750, 1000],
+      sizes:[10, 25, 50, 75, 100],
       selectedAlgorithm: "",
       selectedSpeed:"",
       selectedSize:"",
@@ -55,6 +56,10 @@ export default {
     this.array = this.createArray(100)
   },
   methods : {
+    delay(ms){
+      return new Promise(res => setTimeout(res, ms));
+    },
+
     shuffle(array) {
       array.sort(() => Math.random() - 0.5);
     },
@@ -75,7 +80,7 @@ export default {
 
     sortArray(selectedAlgorithm){
       let a = this.algorithms[selectedAlgorithm]
-      console.log(a("b"))
+      console.log(a())
     },
 
     selectionSort(arr){
@@ -86,8 +91,24 @@ export default {
       return arr
     },
 
-    bubbleSort(arr){
-      return arr
+    async bubbleSort(){
+      let len = this.array.length;
+      let swapped;
+      do {
+        swapped = false;
+        for (let i = 0; i < len; i++) {
+          if (this.array[i] > this.array[i + 1]) {
+            let tmp = this.array[i];
+            this.array[i] = this.array[i + 1];
+            this.array[i + 1] = tmp;
+            console.log("Swapping")
+            this.arrayKey += 1;
+            await this.delay(1)
+            swapped = true;
+          }
+        }
+      } while (swapped);
+      return this.array;
     }
   }
 }
@@ -137,6 +158,7 @@ export default {
 .bar{
   flex-grow: 1;
   background-color: lightblue;
+  margin: 1px;
 }
 
 </style>
