@@ -15,7 +15,7 @@
             {{key}}
           </option>
         </select>
-        <select v-model="selectedSize" class="form-select" aria-label="Default select example" @change="randomArray(selectedSize);" onclick="this.selectedIndex = 0; value='';" :disabled="running">
+        <select v-model="selectedSize" class="form-select" aria-label="Default select example" @change="randomArray(selectedSize);" onclick="this.selectedIndex = 0;" :disabled="running">
           <option value selected>Choose an array size</option>
           <option v-for="size in sizes" :key="size" :value="size" >
             {{size}}
@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="arrayContainer" :key="arrayKey">
-      <div v-for="(num, idx) in array" :key="idx" class="bar" :style="{height: (num / array.length) * 80 + '%', 'background-color':colorArray[idx]}"></div>
+      <div v-for="obj in array" :key="obj.num" class="bar" :style="{height: (obj.num / array.length) * 80 + '%', 'background-color':obj.color}"></div>
     </div>
     <div class="footer">
       <button type="button" class="btn btn-primary" @click="sortArray()">Sort Array</button>
@@ -38,13 +38,13 @@ export default {
   data () {
     return {
       array: "",
-      colorArray: "",
       arrayKey:0,
       algorithms: 
         {
         "Insertion Sort": this.instertionSort, 
         "Selection Sort": this.selectionSort, 
         "Bubble Sort": this.bubbleSort,
+        "Quick Sort": this.aux,
       },
       speeds:{1:50, 2:25, 3:10, 4:1, 5:0},
       sizes:[20, 40, 60, 80, 100],
@@ -56,7 +56,6 @@ export default {
   },
   mounted() {
     this.randomArray(100)
-    this.colorArray = Array(100).fill('lightblue')
   },
   methods : {
     delay(ms){
@@ -69,14 +68,13 @@ export default {
 
     createArray(n) {
       //Array of size n starting from 1 to n
-      return Array.from(new Array(n), (x,i) => i+1)
+      return Array.from(new Array(n), (x,i) => {return {'num':i+1, 'color':'lightblue'}})
     },
 
     randomArray(n){
       if (!Number.isInteger(n)){
         n = 100
       }
-      this.colorArray = Array(n).fill('lightblue')
       let a = this.createArray(n)
       this.shuffle(a)
       this.array = a
@@ -104,16 +102,19 @@ export default {
         let min = i;
         for(let j = i+1; j < n; j++){
           await this.delay(this.speeds[this.selectedSpeed])
-          this.colorArray[j-1] = (j-1 == min) ? 'yellow' : 'lightblue'
-          this.colorArray[j] = 'red'
-          if(this.array[j] < this.array[min]) {
-            this.colorArray[min] = 'lightblue'
+          this.array[j-1].color = (j-1 == min) ? 'yellow' : 'lightblue'
+          this.array[j].color = 'red'
+          if(this.array[j].num < this.array[min].num) {
+            this.array[min].color = 'lightblue'
             min=j; 
-            this.colorArray[min] = 'yellow'
+            this.array[min].color = 'yellow'
           }
           this.arrayKey+=1
         }
-        this.colorArray = Array(n).fill('lightblue')
+        //Change all bar colors to lightblue after finish
+        for (let obj of this.array){
+          obj.color = 'lightblue'
+        }
         if (min != i) {
           // Swapping the elements
           let tmp = this.array[i]; 
@@ -170,6 +171,41 @@ export default {
       } while (swapped);
       this.colorArray = Array(len).fill('lightblue')
       return this.array;
+    },
+
+    aux(){
+      this.quickSort(this.array, 0, this.array.length - 1)
+    },
+
+    quickSort(arr, start, end){
+      // Base case or terminating case
+      if (start >= end) {
+          return;
+      }
+      
+      // Returns pivotIndex
+      let index = this.partition(arr, start, end);
+      
+      // Recursively apply the same logic to the left and right subarrays
+      this.quickSort(arr, start, index - 1);
+      this.quickSort(arr, index + 1, end);
+    },
+
+    partition(arr ,start, end){
+      let pivotValue = arr[end];
+      let pivotIndex = start; 
+      for (let i = start; i < end; i++) {
+          if (arr[i] < pivotValue) {
+          // Swapping elements
+          [arr[i], arr[pivotIndex]] = [arr[pivotIndex], arr[i]];
+          // Moving to next element
+          pivotIndex++;
+          }
+      }
+      
+      // Putting the pivot value in the middle
+      [arr[pivotIndex], arr[end]] = [arr[end], arr[pivotIndex]] 
+      return pivotIndex;
     }
   }
 }
