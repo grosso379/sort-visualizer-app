@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="arrayContainer" :key="arrayKey">
-      <div v-for="obj in array" :key="obj.num" class="bar" :style="{height: (obj.num / array.length) * 80 + '%', 'background-color':obj.color}"></div>
+      <div v-for="(obj, idx) in array" :key="idx" class="bar" :style="{height: (obj.num / array.length) * 80 + '%', 'background-color':obj.color}"></div>
     </div>
     <div class="footer">
       <button type="button" class="btn btn-primary" @click="sortArray()">Sort Array</button>
@@ -133,19 +133,20 @@ export default {
         let current = this.array[i];
         // The last element of our sorted subarray
         var j = i-1; 
-        while ((j > -1) && (current < this.array[j])) {
+        while ((j > -1) && (current.num < this.array[j].num)) {
           this.array[j+1] = this.array[j];
+          this.array[j].color = 'red'
+          this.array[j+1].color = 'red'
+          await this.delay(this.speeds[this.selectedSpeed])
+          this.array[j].color = 'lightblue'
+          this.array[j+1].color = 'lightblue'
           j--;
           this.arrayKey += 1
-          this.colorArray[j] = 'red'
-          this.colorArray[j+1] = 'red'
-          await this.delay(this.speeds[this.selectedSpeed])
-          this.colorArray[j] = 'lightblue'
-          this.colorArray[j+1] = 'lightblue'
+          
         }
         this.array[j+1] = current;
       }
-      this.array[j+1] = j+2
+      this.array[j+1].number = j+2
       this.arrayKey += 1
     },
 
