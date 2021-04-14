@@ -155,10 +155,10 @@ export default {
       let swapped;
       do {
         swapped = false;
-        for (let i = 0; i < len; i++) {
-          this.colorArray[i] = 'red'
-          this.colorArray[i + 1] = 'red'
-          if (this.array[i] > this.array[i + 1]) {
+        for (let i = 0; i < len - 1; i++) {
+          this.array[i].color = 'red'
+          this.array[i + 1].color = 'red'
+          if (this.array[i].num > this.array[i + 1].num) {
             let tmp = this.array[i];
             this.array[i] = this.array[i + 1];
             this.array[i + 1] = tmp;
@@ -166,12 +166,14 @@ export default {
           }
           this.arrayKey += 1;
           await this.delay(this.speeds[this.selectedSpeed])
-          this.colorArray[i] = 'lightblue'
-          this.colorArray[i+1] = 'lightblue'
+          this.array[i].color = 'lightblue'
+          this.array[i+1].color = 'lightblue'
         }
       } while (swapped);
-      this.colorArray = Array(len).fill('lightblue')
-      return this.array;
+      //Change all bar colors to lightblue after finish
+      for (let obj of this.array){
+        obj.color = 'lightblue'
+      }
     },
 
     aux(){
