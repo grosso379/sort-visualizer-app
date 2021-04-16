@@ -1,5 +1,10 @@
 # sort-visualizer-app
 
+## Project Link
+```
+https://cocky-jones-b3729d.netlify.app/
+```
+
 ## Project setup
 ```
 npm install
