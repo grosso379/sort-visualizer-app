@@ -46,7 +46,7 @@ export default {
         "Insertion Sort": this.instertionSort, 
         "Selection Sort": this.selectionSort, 
         "Bubble Sort": this.bubbleSort,
-        "Quick Sort": this.aux,
+        "Quick Sort": this.quickSortAux,
       },
       speeds:{1:50, 2:25, 3:10, 4:1, 5:0},
       sizes:[5, 10, 20, 40, 60, 80, 100],
@@ -178,7 +178,7 @@ export default {
       }
     },
 
-    async aux(){
+    async quickSortAux(){
       // await this.quickSort(this.array, 0, this.array.length - 1)
       await this.quickSort(0, this.array.length - 1)
     },
