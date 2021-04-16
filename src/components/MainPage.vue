@@ -47,6 +47,7 @@ export default {
         "Selection Sort": this.selectionSort, 
         "Bubble Sort": this.bubbleSort,
         "Quick Sort": this.quickSortAux,
+        "Merge Sort": this.mergeSortAux,
       },
       speeds:{1:50, 2:25, 3:10, 4:1, 5:0},
       sizes:[5, 10, 20, 40, 60, 80, 100],
@@ -240,6 +241,78 @@ export default {
       await this.quickSort(pivotIdx + 1, end)
       this.arrayKey++;
     },
+
+    async mergeSortAux(){
+      await this.mergeSort(0, this.array.length - 1)
+    },
+
+    async merge(start, mid, end) {      
+      let start2 = mid + 1
+      // If the direct merge is already sorted
+      if (this.array[mid].num <= this.array[start2].num){
+        return
+      }
+      // Two pointers to maintain start
+      // of both arrays to merge
+      while (start <= mid && start2 <= end){
+        this.array[start].color = 'red'
+        this.array[start2].color = 'red'
+        this.arrayKey++;
+        await this.delay(this.speeds[this.selectedSpeed])
+        // If element 1 is in right place
+        if (this.array[start].num <= this.array[start2].num){
+          start += 1
+        } 
+        else{
+          let value = this.array[start2]
+          let index = start2
+          // Shift all the elements between element 1
+          // element 2, right by 1.
+          while (index != start){
+            this.array[index] = this.array[index - 1]
+            index -= 1
+          }
+          this.array[start] = value
+          // Update all the pointers
+          start += 1
+          mid += 1
+          start2 += 1
+  
+          this.array[start2 - 1].color = 'lightblue'
+        }
+        this.array[start - 1].color = 'lightblue'
+        this.arrayKey++;
+      }
+      //Change all bar colors to lightblue after finish
+      for (let obj of this.array){
+        obj.color = 'lightblue'
+      }
+    },
+
+    async mergeSort(left, right) {
+      if (left < right){ 
+        let mid = left + Math.floor((right - left) / 2)
+
+        // Sort first and second halves
+        await this.mergeSort(left, mid)
+        await this.mergeSort(mid + 1, right)
+
+        //Show area that is being worked on
+        for (let i = left; i <= right; i++){
+          this.array[i].backColor = '#d8e6e1'
+        }
+        this.arrayKey++;
+
+        await this.merge(left, mid, right)
+
+        //Area back to normal
+        for (let i = left; i <= right; i++){
+          this.array[i].backColor = ''
+        }
+        this.arrayKey++;
+      }
+    },
+
   },    
 }
 </script>
