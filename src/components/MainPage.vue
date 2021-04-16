@@ -186,7 +186,7 @@ export default {
     async quickSort(start, end){
       //Show area that is being worked on
       for (let i = start; i <= end; i++){
-        this.array[i].backColor = 'lightgrey'
+        this.array[i].backColor = '#d8e6e1'
       }
       this.arrayKey++;
 
