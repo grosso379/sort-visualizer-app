@@ -24,7 +24,9 @@
       </div>
     </div>
     <div class="arrayContainer" :key="arrayKey">
-      <div v-for="(obj, idx) in array" :key="idx" class="bar" :style="{height: (obj.num / array.length) * 80 + '%', 'background-color':obj.color}"></div>
+      <div v-for="(obj, idx) in array" :key="idx" class="bar" :style="{height: '100%', 'background-color': obj.backColor ? obj.backColor : ''}">
+        <div :style="{height: (obj.num / array.length) * 80 + '%', 'background-color':obj.color}"></div>
+      </div>
     </div>
     <div class="footer">
       <button type="button" class="btn btn-primary" @click="sortArray()">Sort Array</button>
@@ -47,7 +49,7 @@ export default {
         "Quick Sort": this.aux,
       },
       speeds:{1:50, 2:25, 3:10, 4:1, 5:0},
-      sizes:[20, 40, 60, 80, 100],
+      sizes:[5, 10, 20, 40, 60, 80, 100],
       selectedAlgorithm: "",
       selectedSpeed:"",
       selectedSize:"",
@@ -68,7 +70,7 @@ export default {
 
     createArray(n) {
       //Array of size n starting from 1 to n
-      return Array.from(new Array(n), (x,i) => {return {'num':i+1, 'color':'lightblue'}})
+      return Array.from(new Array(n), (x,i) => {return {'num':i+1, 'color':'lightblue', 'backColor':""}})
     },
 
     randomArray(n){
@@ -176,41 +178,69 @@ export default {
       }
     },
 
-    aux(){
-      this.quickSort(this.array, 0, this.array.length - 1)
+    async aux(){
+      // await this.quickSort(this.array, 0, this.array.length - 1)
+      await this.quickSort(0, this.array.length - 1)
     },
 
-    quickSort(arr, start, end){
-      // Base case or terminating case
-      if (start >= end) {
-          return;
+    async quickSort(start, end){
+      //Show area that is being worked on
+      for (let i = start; i <= end; i++){
+        this.array[i].backColor = 'lightgrey'
       }
-      
-      // Returns pivotIndex
-      let index = this.partition(arr, start, end);
-      
-      // Recursively apply the same logic to the left and right subarrays
-      this.quickSort(arr, start, index - 1);
-      this.quickSort(arr, index + 1, end);
-    },
+      this.arrayKey++;
 
-    partition(arr ,start, end){
-      let pivotValue = arr[end];
-      let pivotIndex = start; 
-      for (let i = start; i < end; i++) {
-          if (arr[i] < pivotValue) {
-          // Swapping elements
-          [arr[i], arr[pivotIndex]] = [arr[pivotIndex], arr[i]];
-          // Moving to next element
-          pivotIndex++;
-          }
-      }
       
-      // Putting the pivot value in the middle
-      [arr[pivotIndex], arr[end]] = [arr[end], arr[pivotIndex]] 
-      return pivotIndex;
-    }
-  }
+      //At the beggining start is 0 and end is length - 1
+      let n = (end - start) + 1
+      // If n <= 1 means length is 1 or 0 so array is already sorted
+      if (n <= 1){
+        //Area back to normal
+        for (let i = start; i <= end; i++){
+          this.array[i].backColor = ''
+        }
+        return
+      } 
+
+      let pivotIdx =  start + Math.floor(n / 2)
+      for (let i = start ; i <= end ; i++){
+        this.array[pivotIdx].color = "yellow"        
+        this.arrayKey++;
+        await this.delay(this.speeds[this.selectedSpeed])
+        if (i == pivotIdx){
+          //Empty
+        } else if (this.array[i].num <= this.array[pivotIdx].num && i > pivotIdx) {
+          //Delete element from its position and send it to start index
+          this.array.splice(start, 0, this.array.splice(i, 1)[0])
+          //Move pivot to the right
+          pivotIdx++;
+          this.array[pivotIdx - 1].color = "lightblue"
+          this.array[pivotIdx].color = "yellow"
+        } else if (this.array[i].num >= this.array[pivotIdx].num && i < pivotIdx){
+          //Delete element from its position and send it to end index
+          this.array.splice(end, 0, this.array.splice(i, 1)[0])
+          //Move pivot to the left and substract from i so stays in same index
+          pivotIdx--;
+          this.array[pivotIdx + 1].color = "lightblue"
+          this.array[pivotIdx].color = "yellow"
+          i--;
+        }
+        // console.log(`ITER: ${i}, Start: ${start}, End: ${end}, Pivot: ${pivotIdx}, Array: ${JSON.stringify(Array.from(this.array, element => element.num))}`)
+      }
+      this.array[pivotIdx].color = "lightblue"
+      //Call recursive of left part plus recursive of right part
+
+      //Area back to normal
+      for (let i = start; i <= end; i++){
+        this.array[i].backColor = ''
+      }
+      this.arrayKey++;
+
+      await this.quickSort(start, pivotIdx - 1)
+      await this.quickSort(pivotIdx + 1, end)
+      this.arrayKey++;
+    },
+  },    
 }
 </script>
 
@@ -244,7 +274,6 @@ export default {
 
 .arrayContainer{
   display: flex;
-  align-items: flex-end;
   flex-direction: row;
   flex-grow: 1;
   width: 100%;
@@ -258,6 +287,9 @@ export default {
 
 .bar{
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   /* background-color: lightblue; */
   margin: 1px;
 }
