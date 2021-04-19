@@ -29,12 +29,23 @@
       </div>
     </div>
     <div class="footer">
-      <button type="button" class="btn btn-primary" @click="sortArray()">Sort Array</button>
+      <button type="button" class="btn btn-primary" @click="sortArray()" :disabled="running">Sort Array</button>
     </div>
   </div>
 </template>
 
 <script>
+
+import Vue from "vue";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
+Vue.use(Toast, {
+  transition: "Vue-Toastification__bounce",
+  maxToasts: 20,
+  newestOnTop: true
+});
+
 export default {
   name: 'MainPage',
   data () {
@@ -49,8 +60,8 @@ export default {
         "Quick Sort": this.quickSortAux,
         "Merge Sort": this.mergeSortAux,
       },
-      speeds:{1:50, 2:25, 3:10, 4:1, 5:0},
-      sizes:[5, 10, 20, 40, 60, 80, 100],
+      speeds:{1:100, 2:50, 3:25, 4:10, 5:0},
+      sizes:[5, 10, 20, 40, 60, 80, 100, 250],
       selectedAlgorithm: "",
       selectedSpeed:"",
       selectedSize:"",
@@ -91,7 +102,21 @@ export default {
         await algorithm()
         let end = new Date().getTime();
         let time = end - start;
-        alert(`It took ${time} ms to sort an array of size ${this.selectedSize} with ${this.selectedAlgorithm} - speed: ${this.selectedSpeed}`)
+        let message = `It took ${time} ms to sort an array of size ${this.selectedSize} with ${this.selectedAlgorithm} - speed: ${this.selectedSpeed}`
+        this.$toast.success(message, {
+          position: "top-right",
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false
+        });
         this.running = false
       } else {
         alert("Please select a speed and an algorithm")
@@ -313,12 +338,20 @@ export default {
       }
     },
 
+    abort(){
+      throw new Error('This is not an error. This is just to abort javascript');
+    },
+
   },    
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+.btn{
+  margin: 0px 20px;
+}
 
 .wrap{
   display: flex;
