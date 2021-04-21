@@ -61,17 +61,35 @@ export default {
         "Merge Sort": this.mergeSortAux,
       },
       speeds:{1:100, 2:50, 3:25, 4:10, 5:0},
-      sizes:[5, 10, 20, 40, 60, 80, 100, 250],
+      sizes:[5, 10, 20, 40, 50, 60, 80, 100, 250],
       selectedAlgorithm: "",
       selectedSpeed:"",
       selectedSize:"",
       running:false,
     }
   },
-  mounted() {
-    this.randomArray(100)
+  created(){
+    this.onResize()
+    window.addEventListener('resize', this.onResize)
   },
+
+  mounted() {
+    if (window.innerWidth > 800){
+      this.randomArray(100)
+    } else {
+      this.randomArray(50)
+    }
+  },
+
   methods : {
+    onResize(){
+      if (window.innerWidth > 800){
+        this.sizes = [5, 10, 20, 40, 50, 60, 80, 100, 250]
+      } else {
+        this.sizes = [5, 10, 25, 50, 75, 100]
+      }
+    },
+
     delay(ms){
       return new Promise(res => setTimeout(res, ms));
     },
